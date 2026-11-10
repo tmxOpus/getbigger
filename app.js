@@ -125,17 +125,35 @@ const SPORT_MET={gym:7,endurance:8,team:7,combat:7.8};
 const LS="getbigger.v1";
 const EXAMPLE={example:true,sex:"m",age:25,height:180,weight:78,bf:0,job:"low",sport:"gym",sporth:1,exp:"i",goal:"gain",days:4};
 let state={profile:{...EXAMPLE},foods:[],pt:0,days:{}};
-/* Шифрование: ключ AES-256-GCM выводится из кода-пароля через PBKDF2 и живёт только в памяти. */
-const SEC="getbigger.sec",ITER=600000;
-let key=null,vault=null,secBox=null,persistChain=Promise.resolve();
+/* Шифрование: ключ AES-256-GCM создаётся на устройстве, хранится в IndexedDB как неизвлекаемый и пользователю не виден. */
+const SEC="getbigger.sec";
+let key=null,secBox=null,persistChain=Promise.resolve();
 try{secBox=JSON.parse(localStorage.getItem(SEC)||"null")}catch(e){}
-if(!secBox){try{const s=JSON.parse(localStorage.getItem(LS)||localStorage.getItem("dobor.v1")||"null");if(s&&s.profile)state=Object.assign(state,s)}catch(e){}}
+try{const s=JSON.parse(localStorage.getItem(LS)||localStorage.getItem("dobor.v1")||"null");if(s&&s.profile)state=Object.assign(state,s)}catch(e){}
 const b64=u=>{let s="";for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
 const ub64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function deriveKey(pass,salt,iter){
   const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveKey"]);
   return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:iter,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
+function getDeviceKey(){return new Promise((res,rej)=>{
+  if(!(window.indexedDB&&window.crypto&&crypto.subtle))return rej();
+  const rq=indexedDB.open("getbigger",1);
+  rq.onupgradeneeded=()=>rq.result.createObjectStore("keys");
+  rq.onerror=()=>rej();
+  rq.onsuccess=()=>{
+    const db=rq.result,g=db.transaction("keys").objectStore("keys").get("device");
+    g.onerror=()=>rej();
+    g.onsuccess=async()=>{
+      if(g.result)return res(g.result);
+      try{
+        const k=await crypto.subtle.generateKey({name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+        const tx=db.transaction("keys","readwrite");tx.objectStore("keys").put(k,"device");
+        tx.oncomplete=()=>res(k);tx.onerror=()=>rej();
+      }catch(e){rej()}
+    };
+  };
+})}
 async function enc(obj){
   const iv=crypto.getRandomValues(new Uint8Array(12));
   const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(JSON.stringify(obj)));
@@ -149,14 +167,14 @@ function persistLocal(){
   if(!key){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}return persistChain}
   persistChain=persistChain.then(async()=>{
     if(!key)return;
-    try{const box=await enc(state);localStorage.setItem(SEC,JSON.stringify({v:1,salt:vault.salt,iter:vault.iter,...box}))}catch(e){}
+    try{const box=await enc(state);localStorage.setItem(SEC,JSON.stringify({v:2,...box}))}catch(e){}
   });
   return persistChain;
 }
 function dropPlain(){[LS,"dobor.v1"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}})}
-function dropAll(){dropPlain();try{localStorage.removeItem(SEC)}catch(e){}}
+function dropAll(){dropPlain();try{localStorage.removeItem(SEC)}catch(e){}try{indexedDB.deleteDatabase("getbigger")}catch(e){}}
 const localText=()=>key?"Данные зашифрованы на этом устройстве":"Данные хранятся на этом устройстве";
-const savedText=()=>key?"Сохранено в аккаунте в зашифрованном виде":"Сохранено в вашем аккаунте";
+const savedText=()=>"Сохранено в вашем аккаунте";
 // Приводит загруженные извне данные к ожидаемым типам
 function clean(st){
   const num=(v,min,max,d)=>{v=Number(v);return v>=min&&v<=max?v:d},pick=(v,list,d)=>list.includes(v)?v:d,p=st.profile||{};
@@ -173,11 +191,7 @@ function clean(st){
 }
 let cloud=null,flushing=false,flushTimer=0,retried=false;const dirty=new Set();
 
-async function docBody(id){
-  if(id==="sec")return{salt:vault.salt,iter:vault.iter,...await enc("ok"),t:Date.now()};
-  const b=plainBody(id);return key?{enc:1,...await enc(b),t:b.t}:b;
-}
-function plainBody(id){
+function docBody(id){
   if(id==="profile")return{profile:state.profile,foods:state.foods,t:state.pt};
   const d=state.days[id.slice(2)]||{e:[],t:Date.now()};return{e:d.e,t:d.t};
 }
@@ -189,7 +203,7 @@ async function flush(){
   if(flushing||!cloud)return;flushing=true;setStatus("Сохраняю…");
   let id;
   try{
-    while(dirty.size){id=dirty.values().next().value;dirty.delete(id);if(id==="sec"&&!key)await cloud.doc(id).delete();else await cloud.doc(id).set(await docBody(id))}
+    while(dirty.size){id=dirty.values().next().value;dirty.delete(id);await cloud.doc(id).set(docBody(id))}
     retried=false;setStatus(savedText());
   }catch(e){
     if(e&&e.code==="unavailable"&&!retried){retried=true;dirty.add(id);flushTimer=setTimeout(flush,3000)}
@@ -207,25 +221,14 @@ async function initCloud(){
     const uid=await user.id();if(!uid)return;
     const col=db.collection("data/users/"+uid);
     const snap=await Promise.race([col.limit(1000).get(),new Promise((_,r)=>setTimeout(()=>r({code:"timeout"}),10000))]);
-    let cs=null;snap.docs.forEach(d=>{if(d.id==="sec")cs=d.data()});
-    if(cs&&!key&&window.crypto&&crypto.subtle){
-      const ok=await new Promise(res=>showLock({salt:cs.salt,iter:cs.iter,box:cs,cloud:true,done:res}));
-      if(!ok)return;
-      await persistLocal();if(localStorage.getItem(SEC))dropPlain();
-    }
-    if(cs&&(!key||cs.salt!==vault.salt)){setStatus("В аккаунте лежат данные под другим кодом-паролем. Синхронизация выключена");return}
     const seen=new Set();let changed=false;
     for(const d of snap.docs){
-      let b=d.data();if(!b||d.id==="sec")continue;
-      const wasEnc=!!b.enc;
-      if(wasEnc){if(!key)continue;try{b=await dec(b)}catch(e){continue}}
+      const b=d.data();if(!b||b.enc||d.id==="sec")continue;
       seen.add(d.id);
-      if(key&&!wasEnc)dirty.add(d.id);
       if(d.id==="profile"){if((b.t||0)>(state.pt||0)&&b.profile){state.profile=JSON.parse(JSON.stringify(b.profile));state.foods=JSON.parse(JSON.stringify(b.foods||[]));state.pt=b.t;changed=true}}
       else if(d.id.startsWith("d-")){const k=d.id.slice(2),loc=state.days[k];if(!loc||(b.t||0)>(loc.t||0)){state.days[k]={e:JSON.parse(JSON.stringify(b.e||[])),t:b.t||0};changed=true}}
     }
     cloud=col;
-    if(key&&!cs)dirty.add("sec");
     if(state.pt&&!seen.has("profile"))dirty.add("profile");
     Object.keys(state.days).forEach(k=>{if(!seen.has("d-"+k)&&state.days[k].e.length)dirty.add("d-"+k)});
     persistLocal();
@@ -234,30 +237,20 @@ async function initCloud(){
   }catch(e){/* остаёмся на локальном хранении */}
 }
 
-/* ---------- Замок ---------- */
-function showLock(o){
-  const L=$("lock"),inp=$("lock-pass"),msg=$("lock-msg"),alt=$("lock-alt");
-  L.hidden=false;$("app").inert=true;inp.value="";msg.textContent="";let armed=false;
-  $("lock-text").textContent=o.cloud?"Данные в аккаунте зашифрованы. Введите код-пароль, чтобы открыть их на этом устройстве.":"Данные зашифрованы. Введите код-пароль.";
-  alt.textContent=o.cloud?"Продолжить без синхронизации":"Забыл код: стереть данные на этом устройстве";
-  const close=v=>{inp.value="";L.hidden=true;$("app").inert=false;o.done(v)};
+/* ---------- Переход со старой защиты кодом-паролем: спрашивает код один раз и снимает её ---------- */
+function legacyUnlock(box){return new Promise(res=>{
+  const L=$("lock"),inp=$("lock-pass"),msg=$("lock-msg"),alt=$("lock-alt");let armed=false;
+  L.hidden=false;$("app").inert=true;
+  $("lock-text").textContent="Раньше эти данные были закрыты кодом-паролем. Введите его один раз: после этого код больше не понадобится.";
+  alt.textContent="Не помню код: стереть данные";
+  const close=v=>{inp.value="";L.hidden=true;$("app").inert=false;res(v)};
   $("lock-form").onsubmit=async e=>{
     e.preventDefault();if(!inp.value)return;msg.textContent="Проверяю…";
-    try{const k=await deriveKey(inp.value,ub64(o.salt),o.iter);const v=await dec(o.box,k);key=k;vault={salt:o.salt,iter:o.iter};close(v)}
-    catch(err){msg.textContent="Код не подошёл.";inp.select()}
+    try{close(await dec(box,await deriveKey(inp.value,ub64(box.salt),box.iter)))}catch(err){msg.textContent="Код не подошёл.";inp.select()}
   };
-  alt.onclick=()=>{
-    if(o.cloud){close(false);return}
-    if(!armed){armed=true;alt.textContent="Стереть без возможности восстановления? Нажмите ещё раз";return}
-    dropAll();location.reload();
-  };
+  alt.onclick=()=>{if(!armed){armed=true;alt.textContent="Стереть без возможности восстановления? Нажмите ещё раз";return}close(null)};
   setTimeout(()=>inp.focus(),50);
-}
-let hiddenAt=0;
-document.addEventListener("visibilitychange",()=>{
-  if(document.hidden)hiddenAt=Date.now();
-  else if(key&&hiddenAt&&Date.now()-hiddenAt>5*60e3)location.reload();
-});
+})}
 
 /* ---------- Расчёты ---------- */
 const r0=x=>Math.round(x),r5=x=>Math.round(x/5)*5,r10=x=>Math.round(x/10)*10;
@@ -679,69 +672,35 @@ function renderProfilePreview(){
 
 /* ---------- Защита данных ---------- */
 function securityHtml(){
-  if(!(window.crypto&&crypto.subtle))return`<div class="sec" id="security"><h2>Защита данных</h2><p class="prose">Шифрование недоступно в этом браузере.</p></div>`;
   const files=!window.claude&&window.self===window.top;
   return`<div class="sec" id="security"><h2>Защита данных</h2>
-  ${key?`<p class="prose">Шифрование включено. Профиль и дневник хранятся в виде AES-256-GCM. Ключ выводится из вашего кода-пароля (PBKDF2-SHA-256, ${nf(vault.iter)} итераций) и нигде не сохраняется. После 5 минут в фоне приложение блокируется.</p>
-    <div class="row"><button class="btn ghost" id="s-lock">Заблокировать сейчас</button><button class="btn ghost" id="s-off">Отключить шифрование</button></div>
-    <p class="sub">Чтобы сменить код-пароль, отключите шифрование и включите его с новым кодом.</p>`
-  :`<p class="prose">Сейчас профиль и дневник лежат в памяти браузера открытым текстом. Задайте код-пароль, и они будут храниться зашифрованными, а приложение будет спрашивать код при каждом запуске. Забытый код восстановить нельзя: без него данные не расшифровать.</p>
-    <div class="fgrid" style="max-width:520px">
-      <label class="field"><span>Код-пароль, от 6 символов</span><input type="password" id="s-p1" autocomplete="new-password"></label>
-      <label class="field"><span>Ещё раз</span><input type="password" id="s-p2" autocomplete="new-password"></label>
-    </div>
-    <div class="row"><button class="btn" id="s-on">Включить шифрование</button></div>`}
+  <p class="prose">${key?"Профиль и дневник хранятся на этом устройстве в зашифрованном виде (AES-256-GCM). Ключ создаётся автоматически, лежит в хранилище браузера и не может быть из него выгружен. Пароль не нужен.":"Этот браузер не даёт создать ключ шифрования, поэтому данные хранятся на устройстве открытым текстом."}${files?" Данные никуда не отправляются.":""}</p>
   ${files?`<h3>Резервная копия</h3>
-    <p class="sub">Файл со всеми данными${key?", зашифрованный вашим кодом-паролем":". Без шифрования он сохраняется открытым текстом"}. Восстановление заменяет текущие данные.</p>
-    <div class="row"><button class="btn ghost" id="s-export">Скачать копию</button><label class="btn ghost" for="s-file">Восстановить из файла</label><input type="file" id="s-file" accept="application/json,.json" hidden></div>
-    <label class="field" style="max-width:320px"><span>Код-пароль копии, если она зашифрована</span><input type="password" id="s-bp" autocomplete="off"></label>`:""}
+    <p class="sub">Файл со всеми данными в открытом виде: храните его там, где его не прочитают посторонние. Восстановление заменяет текущие данные.</p>
+    <div class="row"><button class="btn ghost" id="s-export">Скачать копию</button><label class="btn ghost" for="s-file">Восстановить из файла</label><input type="file" id="s-file" accept="application/json,.json" hidden></div>`:""}
   <h3>Удаление</h3>
   <div class="row"><button class="btn ghost" id="s-wipe">Стереть все данные</button></div>
   <p class="sub" id="s-msg" aria-live="polite"></p></div>`;
 }
 function wireSecurity(){
   const msg=t=>{$("s-msg").textContent=t},on=(id,fn)=>{const e=$(id);if(e)e.onclick=fn};
-  const allDirty=()=>{if(!cloud){setStatus(localText());return}dirty.add("sec");dirty.add("profile");Object.keys(state.days).forEach(k=>dirty.add("d-"+k));flush()};
-  const redraw=t=>{$("security").outerHTML=securityHtml();wireSecurity();$("s-msg").textContent=t};
-  on("s-on",async()=>{
-    const a=$("s-p1").value,b=$("s-p2").value;
-    if(a.length<6){msg("Код-пароль должен быть не короче 6 символов.");return}
-    if(a!==b){msg("Коды не совпадают.");return}
-    msg("Шифрую…");
-    try{
-      const salt=crypto.getRandomValues(new Uint8Array(16));
-      key=await deriveKey(a,salt,ITER);vault={salt:b64(salt),iter:ITER};
-      await persistLocal();if(!localStorage.getItem(SEC))throw 0;
-      dropPlain();allDirty();redraw("Шифрование включено. Запомните код-пароль: восстановить его нельзя.");
-    }catch(e){key=null;vault=null;try{localStorage.removeItem(SEC)}catch(x){}persistLocal();msg("Не удалось включить шифрование: браузер не дал сохранить данные.")}
-  });
-  on("s-lock",()=>persistChain.then(()=>location.reload()));
-  let offArmed=false,wipeArmed=false;
-  on("s-off",async()=>{
-    if(!offArmed){offArmed=true;$("s-off").textContent="Точно отключить?";return}
-    await persistChain;key=null;vault=null;persistLocal();try{localStorage.removeItem(SEC)}catch(e){}
-    allDirty();redraw("Шифрование отключено. Данные снова хранятся открытым текстом.");
-  });
-  on("s-export",async()=>{
-    const body=key?{app:"getbigger",v:1,salt:vault.salt,iter:vault.iter,...await enc(state)}:{app:"getbigger",v:1,state};
-    const a=document.createElement("a"),url=URL.createObjectURL(new Blob([JSON.stringify(body)],{type:"application/json"}));
+  on("s-export",()=>{
+    const a=document.createElement("a"),url=URL.createObjectURL(new Blob([JSON.stringify({app:"getbigger",v:2,state})],{type:"application/json"}));
     a.href=url;a.download="getbigger-"+dkey(new Date())+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
-    msg(key?"Копия скачана. Она открывается только вашим кодом-паролем.":"Копия скачана. Она не зашифрована, храните её в надёжном месте.");
+    msg("Копия скачана. Она не зашифрована, храните её в надёжном месте.");
   });
   const f=$("s-file");
   if(f)f.onchange=async()=>{
     const file=f.files[0];f.value="";if(!file)return;
     try{
-      const o=JSON.parse(await file.text());let st;
-      if(o.ct){
-        const p=$("s-bp").value;
-        if(!p){msg("Копия зашифрована. Введите её код-пароль в поле выше и выберите файл ещё раз.");return}
-        st=await dec(o,await deriveKey(p,ub64(o.salt),o.iter));
-      }else st=o.state;
-      if(!st||!st.profile)throw 0;
-      state=clean(st);await persistLocal();allDirty();viewProfile();$("s-msg").textContent="Данные восстановлены из копии.";
-    }catch(e){msg("Не получилось прочитать копию: неверный код-пароль или повреждённый файл.")}
+      const o=JSON.parse(await file.text());
+      if(!o.state||!o.state.profile)throw 0;
+      state=clean(o.state);await persistLocal();
+      if(cloud){dirty.add("profile");Object.keys(state.days).forEach(k=>dirty.add("d-"+k));flush()}
+      viewProfile();$("s-msg").textContent="Данные восстановлены из копии.";
+    }catch(e){msg("Не получилось прочитать копию: это не файл GetBigger или он повреждён.")}
   };
+  let wipeArmed=false;
   on("s-wipe",async()=>{
     if(!wipeArmed){wipeArmed=true;$("s-wipe").textContent="Стереть без возможности восстановления?";return}
     await persistChain;const col=cloud;cloud=null;key=null;dropAll();
@@ -804,6 +763,14 @@ function viewSources(){
   };
 })();
 
-function boot(){route();initCloud()}
-if(secBox&&window.crypto&&crypto.subtle)showLock({salt:secBox.salt,iter:secBox.iter,box:secBox,done:st=>{state=Object.assign(state,st);boot()}});
-else boot();
+async function boot(){
+  try{key=await getDeviceKey()}catch(e){key=null}
+  if(secBox&&secBox.salt){
+    const st=await legacyUnlock(secBox);if(st)state=Object.assign(state,st);
+    try{localStorage.removeItem(SEC)}catch(e){}
+    if(!key)persistLocal();
+  }else if(secBox&&key){try{state=Object.assign(state,await dec(secBox))}catch(e){}}
+  if(key){await persistLocal();if(localStorage.getItem(SEC))dropPlain()}
+  route();initCloud();
+}
+boot();
