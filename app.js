@@ -60,7 +60,58 @@ avocado:["Авокадо",160,2,14.7,8.5,6.7,80],
 olive:["Масло оливковое",884,0,100,0,0,10],
 butter:["Масло сливочное",717,0.9,81,0.1,0,10],
 honey:["Мёд",304,0.3,0,82.4,0.2,20],
-choc:["Шоколад тёмный 70–85%",598,7.8,42.6,45.9,10.9,25]
+choc:["Шоколад тёмный 70–85%",598,7.8,42.6,45.9,10.9,25],
+// жареное
+chickenfr:["Куриная грудка, жареная на сковороде",187,33.4,4.7,0.5,0,150],
+chickenbat:["Курица в панировке, жареная",260,24.8,13.2,9,0.3,150],
+eggfr:["Яичница (яйцо жареное)",196,13.6,14.8,0.8,0,110],
+omelet:["Омлет, яичница-болтунья",149,10,11,1.6,0,150],
+potfr:["Картофель жареный",192,2.8,9.5,23.4,2,250],
+fries:["Картофель фри",312,3.4,14.7,41.4,3.8,120],
+liverfr:["Печень говяжья, жареная",175,26.5,4.7,5.2,0,120],
+// мясо, рыба, молочное
+chickenboil:["Куриная грудка отварная",151,29,3,0,0,150],
+pollock:["Минтай, запечённый",111,23.5,1.2,0,0,170],
+herring:["Сельдь атлантическая, готовая",203,23,11.6,0,0,100],
+doktor:["Колбаса варёная «Докторская»",257,12.8,22.2,1.5,0,50],
+mozz:["Сыр моцарелла",300,22.2,22.4,2.2,0,30],
+feta:["Сыр фета",264,14.2,21.3,3.9,0,30],
+icecream:["Мороженое ванильное",207,3.5,11,23.6,0.7,80],
+// крупы, хлеб, бобовые
+barley:["Перловка варёная",123,2.3,0.4,28.2,3.8,250],
+millet:["Пшено варёное",119,3.5,1,23.7,1.3,250],
+couscous:["Кускус варёный",112,3.8,0.2,23.2,1.4,200],
+soba:["Гречневая лапша (соба) варёная",99,5.1,0.1,21.4,0,200],
+pita:["Лаваш, пита пшеничная",275,9.1,1.2,55.7,2.2,60],
+peas:["Горох варёный",118,8.3,0.4,21.1,8.3,200],
+hummus:["Хумус",166,7.9,9.6,14.3,6,50],
+pizza:["Пицца с сыром",266,11.4,9.7,33.3,2.3,150],
+// овощи
+zucchini:["Кабачок",17,1.2,0.3,3.1,1,150],
+cauli:["Цветная капуста",25,1.9,0.3,5,2,150],
+beet:["Свёкла варёная",44,1.7,0.2,10,2,100],
+greenpeas:["Зелёный горошек варёный",78,5.2,0.3,14.3,4.5,100],
+greenbeans:["Стручковая фасоль варёная",35,1.9,0.3,7.9,3.2,150],
+corn:["Кукуруза сладкая варёная",96,3.4,1.5,21,2.4,100],
+mushroom:["Шампиньоны",22,3.1,0.3,3.3,1,100],
+onion:["Лук репчатый",40,1.1,0.1,9.3,1.7,50],
+lettuce:["Салат листовой",15,1.4,0.2,2.9,1.3,50],
+// фрукты и ягоды
+pear:["Груша",57,0.4,0.1,15.2,3.1,170],
+kiwi:["Киви",61,1.1,0.5,14.7,3,75],
+grape:["Виноград",69,0.7,0.2,18.1,0.9,150],
+mandarin:["Мандарин",53,0.8,0.3,13.3,1.8,80],
+strawberry:["Клубника",32,0.7,0.3,7.7,2,150],
+watermelon:["Арбуз",30,0.6,0.2,7.6,0.4,300],
+apricotdry:["Курага",241,3.4,0.5,62.6,7.3,30],
+// орехи, семена, масла, сладкое
+cashew:["Кешью",553,18.2,43.9,30.2,3.3,25],
+hazelnut:["Фундук",628,15,60.8,16.7,9.7,25],
+sunseed:["Семечки подсолнечника",584,20.8,51.5,20,8.6,25],
+chia:["Семена чиа",486,16.5,30.7,42.1,34.4,15],
+sunoil:["Масло подсолнечное",884,0,100,0,0,10],
+sugar:["Сахар",387,0,0,100,0,10],
+milkchoc:["Шоколад молочный",535,7.6,29.7,59.4,3.4,25]
 };
 const SRC_P=["chicken","cod","tvorog0","tuna","turkey","eggwhite","shrimp","greek","tvorog5","pork","whey","egg","beef","salmon","tofu"];
 const SRC_C=["rice","buckwheat","potato","oats","pasta","banana","breadw","bulgur"];
@@ -114,6 +165,7 @@ const WD=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
 const GOALS={
 gain:["Набрать мышечную массу","Небольшой профицит калорий и много белка"],
 cut:["Снизить процент жира","Дефицит калорий с сохранением мышц"],
+relief:["Прорисовать рельеф","Небольшой дефицит, много белка, силовые с интервалами"],
 strength:["Стать сильнее","Тяжёлые базовые упражнения, калории на уровне расхода"],
 endurance:["Повысить выносливость","Больше углеводов, силовая работа как дополнение"],
 keep:["Поддерживать форму","Калории на уровне расхода"]
@@ -267,7 +319,8 @@ function rx(type,style,exp){
   const T={
     hyper:{M:[3,"6–10",2.5],A:[3,"8–12",2],I:[3,"10–15",1.25]},
     strength:{M:[4,"3–5",4],A:[3,"6–8",2.5],I:[2,"8–12",1.5]},
-    endur:{M:[3,"4–6",3],A:[2,"6–8",2.5],I:[2,"10–15",1.25]}
+    endur:{M:[3,"4–6",3],A:[2,"6–8",2.5],I:[2,"10–15",1.25]},
+    relief:{M:[3,"6–10",2.5],A:[3,"10–12",1.5],I:[3,"12–15",1]}
   }[style][type].slice();
   if(exp==="n"){if(type!=="M")T[0]=2;if(style==="strength"&&type==="M"){T[0]=3;T[1]="5"}}
   if(exp==="a"&&type==="M"&&style==="hyper")T[0]=4;
@@ -277,7 +330,7 @@ function trainingPlan(p){
   const cap={n:3,i:4,a:6}[p.exp];
   const extra=p.sport!=="gym"||p.goal==="endurance";
   const days=Math.max(2,extra?Math.min(p.days,(p.goal==="gain"||p.goal==="strength")?3:2):Math.min(p.days,cap));
-  const style=p.goal==="strength"?"strength":p.goal==="endurance"?"endur":"hyper";
+  const style=p.goal==="strength"?"strength":p.goal==="endurance"?"endur":p.goal==="relief"?"relief":"hyper";
   const vol={};let totalMin=0;
   const sessions=SPLITS[days].map((k,i)=>{
     let min=10;
@@ -286,6 +339,8 @@ function trainingPlan(p){
       vol[EX[e][1]]=(vol[EX[e][1]]||0)+sets;EX[e][2].forEach(g=>vol[g]=(vol[g]||0)+sets/2);
       return{name:EX[e][0],sets,reps,rest};
     });
+    // для рельефа: короткие интервалы в конце двух тренировок
+    if(style==="relief"&&!extra&&(i===0||i===Math.floor(days/2))){rows.push({name:"Интервалы на велотренажёре или гребном: 30 с почти в полную силу",sets:p.exp==="n"?5:8,reps:"30 с",rest:1.5});min+=p.exp==="n"?12:18}
     min=r5(min);totalMin+=min;
     return{title:DAYS[k][0],wd:WEEKDAYS[days][i],rows,min};
   });
@@ -303,6 +358,7 @@ function calc(p){
   let kcal=tdee,ppk=1.6,fpk=1;
   if(p.goal==="gain"){kcal=tdee*(1+{n:.15,i:.12,a:.10}[p.exp]);ppk=2}
   if(p.goal==="cut"){kcal=tdee*.8;ppk=2.2;fpk=.8}
+  if(p.goal==="relief"){kcal=tdee*.88;ppk=2.4;fpk=.8}
   if(p.goal==="strength")ppk=1.8;
   const floor=ffm?Math.max(bmr,30*ffm+gymK+sportK):bmr;
   const floored=kcal<floor;if(floored)kcal=floor;
@@ -374,6 +430,16 @@ function viewDay(){
             <div class="wide"><button class="btn ghost" id="c-add">Сохранить продукт</button> <span class="sub" id="c-msg"></span></div>
           </div>
         </details>
+        <details id="manual"><summary>Ввести БЖУ вручную</summary>
+          <div class="fgrid">
+            <label class="field wide"><span>Что съели, необязательно</span><input type="text" id="m-n" maxlength="60" placeholder="Например: обед в столовой"></label>
+            <label class="field"><span>Белки, г</span><input type="number" id="m-p" min="0" max="500" step="0.1" inputmode="decimal"></label>
+            <label class="field"><span>Жиры, г</span><input type="number" id="m-f" min="0" max="500" step="0.1" inputmode="decimal"></label>
+            <label class="field"><span>Углеводы, г</span><input type="number" id="m-c" min="0" max="1000" step="0.1" inputmode="decimal"></label>
+            <label class="field"><span>Ккал</span><input type="number" id="m-k" min="0" max="10000" inputmode="numeric" placeholder="посчитаю сам"></label>
+            <div class="wide"><button class="btn" id="m-add">Записать в дневник</button> <span class="sub" id="m-msg"></span></div>
+          </div>
+        </details>
       </div>
       <div class="sec"><h2>Съедено</h2><ul class="entries" id="entries"></ul></div>
       <div class="sec"><h2>Чем добрать</h2><div id="ideas"></div></div>
@@ -387,6 +453,8 @@ function viewDay(){
   $("grams").onkeydown=e=>{if(e.key==="Enter")addPicked()};
   $("add").onclick=addPicked;
   $("c-add").onclick=addCustom;
+  $("m-add").onclick=addManual;
+  ["m-p","m-f","m-c"].forEach(i=>$(i).oninput=()=>{const k=manualKcal();$("m-k").placeholder=k>0?"≈ "+r0(k)+", посчитаю сам":"посчитаю сам"});
   renderFound();refreshDay();
 }
 function renderFound(){
@@ -420,6 +488,19 @@ function addPicked(){
   pushEntry(picked,g);save("d-"+curDate);
   picked=null;$("addrow").hidden=true;$("q").value="";renderFound();refreshDay();$("q").focus();
 }
+function manualVals(){return["m-p","m-f","m-c","m-k"].map(i=>{const v=$(i).value.trim();return v===""?null:parseFloat(v)})}
+function manualKcal(){const [p,f,c]=manualVals();return 4*(p||0)+9*(f||0)+4*(c||0)}
+function addManual(){
+  const [p,f,c,k]=manualVals(),lim=[500,500,1000,10000];
+  if([p,f,c,k].some((v,i)=>v!==null&&!(v>=0&&v<=lim[i]))){$("m-msg").textContent="Проверьте числа: они не могут быть отрицательными или слишком большими.";return}
+  const kc=k!==null?k:manualKcal();
+  if(!(kc>0)&&!(p||f||c)){$("m-msg").textContent="Укажите хотя бы одно значение.";return}
+  const d=state.days[curDate]||(state.days[curDate]={e:[],t:0});
+  d.e.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),key:"",n:$("m-n").value.trim()||"Ввод вручную",g:0,k:+kc.toFixed(1),p:+(p||0).toFixed(1),f:+(f||0).toFixed(1),c:+(c||0).toFixed(1),fi:0});
+  d.t=Date.now();save("d-"+curDate);
+  ["m-n","m-p","m-f","m-c","m-k"].forEach(i=>$(i).value="");$("m-k").placeholder="посчитаю сам";
+  $("m-msg").textContent="Записано.";refreshDay();
+}
 function addCustom(){
   const n=$("c-n").value.trim(),v=["c-k","c-p","c-f","c-c"].map(i=>parseFloat($(i).value));
   if(!n||v.some(x=>!(x>=0))){$("c-msg").textContent="Заполните название и все четыре значения.";return}
@@ -441,7 +522,7 @@ function refreshDay(){
   <div class="lrow thick" style="padding:5px 0 0"></div>
   ${macroRow("p","Белки",t.p,c.prot)}${macroRow("c","Углеводы",t.c,c.carb)}${macroRow("f","Жиры",t.f,c.fat)}
   <div class="lrow"><span>Клетчатка</span><span class="v">${r0(t.fi)} из ${r0(c.fiber)} г</span></div>`;
-  $("entries").innerHTML=list.length?list.map(e=>`<li><span>${esc(e.n)}, ${r0(e.g)} г</span><span class="kc">${r0(e.k)} ккал</span><button class="x" data-id="${esc(e.id)}" aria-label="Удалить запись">×</button><span class="m num">Б ${r0(e.p)} · Ж ${r0(e.f)} · У ${r0(e.c)}</span></li>`).join(""):`<li class="empty" style="display:block">За этот день пока ничего не записано. Найдите продукт выше и укажите граммы.</li>`;
+  $("entries").innerHTML=list.length?list.map(e=>`<li><span>${esc(e.n)}${e.g?`, ${r0(e.g)} г`:""}</span><span class="kc">${r0(e.k)} ккал</span><button class="x" data-id="${esc(e.id)}" aria-label="Удалить запись">×</button><span class="m num">Б ${r0(e.p)} · Ж ${r0(e.f)} · У ${r0(e.c)}</span></li>`).join(""):`<li class="empty" style="display:block">За этот день пока ничего не записано. Найдите продукт выше и укажите граммы.</li>`;
   $("entries").querySelectorAll(".x").forEach(b=>b.onclick=()=>{const d=state.days[curDate];d.e=d.e.filter(e=>e.id!==b.dataset.id);d.t=Date.now();save("d-"+curDate);refreshDay()});
   renderIdeas(c,t);renderWeek(c);
 }
@@ -485,7 +566,7 @@ function renderWeek(c){
 
 /* ---------- Питание ---------- */
 function menu(c,p){
-  const lean=p.goal==="cut";
+  const lean=p.goal==="cut"||p.goal==="relief";
   const tpl=[["Завтрак",[["oats",70,"C"],["egg",110,"P"],["banana",120,"C"]]],
     ["Обед",[["chicken",150,"P"],["rice",250,"C"],["broccoli",150,"-"],["olive",10,"F"]]],
     ["Перекус",[[lean?"tvorog0":"tvorog5",200,"P"],["berries",100,"-"],["almond",20,"F"]]],
@@ -505,6 +586,7 @@ function viewNutrition(){
   const wk=c.weekly,pctW=Math.abs(wk)/W*100;
   const trend=p.goal==="gain"?`Ожидаемая прибавка — около ${wk.toFixed(2).replace(".",",")} кг в неделю (${pctW.toFixed(1).replace(".",",")}% массы тела). Ориентир для набора без лишнего жира — 0,25–0,5% в неделю.`
     :p.goal==="cut"?`Ожидаемое снижение — около ${(-wk).toFixed(2).replace(".",",")} кг в неделю (${pctW.toFixed(1).replace(".",",")}% массы тела). Безопасный для мышц темп — 0,5–1% в неделю.`
+    :p.goal==="relief"?`Ожидаемое снижение — около ${(-wk).toFixed(2).replace(".",",")} кг в неделю (${pctW.toFixed(1).replace(".",",")}% массы тела). Для рельефа держите медленный темп, 0,25–0,5% в неделю: при нём и много белка жир уходит, а мышцы сохраняются и даже растут. Ориентир — не вес, а талия и фото раз в 2 недели.`
     :"Вес должен оставаться примерно на месте.";
   view().innerHTML=`${exampleNote()}
   ${p.age<18?`<div class="note warn">Формулы рассчитаны на взрослых. До 18 лет дефицит калорий и добавки стоит обсуждать с врачом и тренером.</div>`:""}
@@ -534,10 +616,10 @@ function viewNutrition(){
     <div class="stack">
       <div class="sec prose">
         <h2>Как этим пользоваться</h2>
-        <p>${trend} <span class="ref">ист. 8, 9, 10</span></p>
+        <p>${trend} <span class="ref">ист. ${p.goal==="relief"?"8, 10, 24":"8, 9, 10"}</span></p>
         <p>Любая формула ошибается на 10% и больше. Взвешивайтесь по утрам, сравнивайте средние за неделю. Если через 2–3 недели темп не совпал с ожидаемым, сдвиньте калории на 100–200 в нужную сторону за счёт углеводов.</p>
-        <p>Белок: ${p.goal==="cut"?"в дефиците нужно больше, 2,3–3,1 г на кг безжировой массы":"для роста и сохранения мышц хватает 1,6–2,2 г/кг, выше прибавки нет"}. Делите на 3–5 приёмов по 0,4–0,55 г/кг, то есть по ${r0(.4*W)}–${r0(.55*W)} г. <span class="ref">ист. 6, 7, 8, 11</span></p>
-        <p>Углеводы: при вашем объёме нагрузки (около ${c.hpd.toFixed(1).replace(".",",")} ч в день) спортивные диетологи советуют ${c.carbRef} г/кг. У вас выходит ${(c.carb/W).toFixed(1).replace(".",",")} г/кг${p.goal==="cut"?"; в дефиците это нормально, основную часть ставьте вокруг тренировки":""}. Жиры не опускайте ниже 20% калорий надолго. <span class="ref">ист. 5</span></p>
+        <p>Белок: ${p.goal==="relief"?"при дефиците и тяжёлых тренировках 2,4 г/кг помогли одновременно сбросить жир и добавить мышцы":p.goal==="cut"?"в дефиците нужно больше, 2,3–3,1 г на кг безжировой массы":"для роста и сохранения мышц хватает 1,6–2,2 г/кг, выше прибавки нет"}. Делите на 3–5 приёмов по 0,4–0,55 г/кг, то есть по ${r0(.4*W)}–${r0(.55*W)} г. <span class="ref">ист. 6, 7, 8, 11${p.goal==="relief"?", 25":""}</span></p>
+        <p>Углеводы: при вашем объёме нагрузки (около ${c.hpd.toFixed(1).replace(".",",")} ч в день) спортивные диетологи советуют ${c.carbRef} г/кг. У вас выходит ${(c.carb/W).toFixed(1).replace(".",",")} г/кг${p.goal==="cut"||p.goal==="relief"?"; в дефиците это нормально, основную часть ставьте вокруг тренировки":""}. Жиры не опускайте ниже 20% калорий надолго. <span class="ref">ист. 5</span></p>
         ${c.refW!==W?`<p class="sub">При ИМТ выше 30 белок и жиры посчитаны от веса, соответствующего ИМТ 25, иначе цифры получаются завышенными. Это практическая поправка, а не результат исследования.</p>`:""}
       </div>
       <div class="sec">
@@ -572,9 +654,11 @@ function viewTraining(){
     :`При вашем стаже (${{n:"до года",i:"1–3 года",a:"больше 3 лет"}[p.exp]}) оптимально ${{n:"2–3",i:"3–4",a:"4–6"}[p.exp]} силовых в неделю. Каждая группа мышц получает нагрузку минимум дважды в неделю: так рост лучше, чем при одном разе. <span class="ref">ист. 13, 14</span>`;
   const styleTxt={hyper:"Диапазон 6–15 повторений, отдых 1–3 минуты. Мышцы растут в широком диапазоне повторений, если подход заканчивается за 1–3 повтора до отказа.",
     strength:"Базовые упражнения по 3–5 повторений с весом от 80% максимума, отдых 3–5 минут. Для силы тяжёлые веса работают лучше лёгких.",
-    endur:"Немного тяжёлых подходов по 4–6 повторений. Задача — сила, а не усталость: до отказа не работайте."}[pl.style];
+    endur:"Немного тяжёлых подходов по 4–6 повторений. Задача — сила, а не усталость: до отказа не работайте.",
+    relief:"Базовые упражнения — тяжело, по 6–10 повторений: они держат мышцы в дефиците. Подсобные и изолирующие — по 10–15 повторений с коротким отдыхом 1–1,5 минуты, за 1–2 повтора до отказа. В двух тренировках в конце стоят короткие интервалы."}[pl.style];
   const cardio=pl.extra?(p.sport==="gym"?"3–4 тренировки на выносливость в неделю, большая часть — в лёгком темпе, при котором можно разговаривать.":`Основной спорт — ${String(p.sporth||0).replace(".",",")} ч в неделю по данным профиля.`)
     :p.goal==="cut"?"2–3 раза в неделю по 30–40 минут умеренного кардио или больше ходьбы. Это помогает держать дефицит, не урезая еду."
+    :p.goal==="relief"?"Интервалы уже стоят в плане: 30 секунд почти в полную силу, 90 секунд легко. По сжиганию жира они не лучше обычного кардио, но занимают втрое меньше времени. Ещё 1–2 раза в неделю по 30–40 минут спокойного кардио и 8–10 тысяч шагов в день помогут держать дефицит, не урезая еду."
     :"По желанию 2 раза по 20–30 минут лёгкого кардио. Для здоровья ВОЗ советует 150–300 минут умеренной активности в неделю, ходьба считается.";
   const cells=WD.map((d,i)=>{const s=pl.sessions.find(x=>x.wd===i);return s?`<div class="on"><small>${d}</small><b>${s.title}</b></div>`:`<div class="off"><small>${d}</small><b>отдых</b></div>`}).join("");
   view().innerHTML=`${exampleNote()}
@@ -589,14 +673,14 @@ function viewTraining(){
         <div class="sec prose"><h2>Как работать</h2>
           <p>${styleTxt} <span class="ref">ист. 13, 16, 23</span></p>
           <p>Прогрессия: когда в последнем подходе получается на 1–2 повтора больше верхней границы две тренировки подряд, добавьте 2–10% веса.</p>
-          ${p.goal==="cut"?`<p>В дефиците веса на штанге не снижайте: именно тяжёлая работа сохраняет мышцы. Если не восстанавливаетесь, уберите по одному подходу из подсобных упражнений. <span class="ref">ист. 8</span></p>`:""}
+          ${p.goal==="cut"||p.goal==="relief"?`<p>В дефиците веса на штанге не снижайте: именно тяжёлая работа сохраняет мышцы. Если не восстанавливаетесь, уберите по одному подходу из подсобных упражнений. <span class="ref">ист. 8</span></p>`:""}
           <p>Перед рабочими подходами — 5–10 минут разминки и 2–3 подводящих подхода в первом упражнении. Сон 7–9 часов.</p>
         </div>
         <div class="sec"><h2>Объём за неделю</h2>
           <div class="chips">${Object.entries(pl.vol).sort((a,b)=>b[1]-a[1]).map(([g,v])=>`<span><b>${r0(v)}</b>${g}</span>`).join("")}</div>
           <p class="sub">Подходов на группу мышц. Подход, где группа работает вспомогательно, посчитан за половину. Для роста опытным нужно от 10 в неделю, новичкам хватает меньшего. <span class="ref">ист. 13, 15</span></p>
         </div>
-        <div class="sec prose"><h2>Кардио</h2><p>${cardio} <span class="ref">ист. 18</span></p></div>
+        <div class="sec prose"><h2>Кардио</h2><p>${cardio} <span class="ref">ист. 18${p.goal==="relief"?", 26":""}</span></p></div>
       </div>
       <div class="stack">
         ${pl.sessions.map(s=>`<div class="sec"><h3>${WD[s.wd]} · ${s.title} <span class="sub" style="font-weight:400">· около ${s.min} мин</span></h3>
@@ -734,14 +818,17 @@ function viewSources(){
   ["Guest NS и др. ISSN position stand: caffeine and exercise performance. J Int Soc Sports Nutr. 2021;18:1.","Кофеин, 3–6 мг/кг за час до нагрузки."],
   ["USDA FoodData Central, fdc.nal.usda.gov; Скурихин И. М., Тутельян В. А. Химический состав российских пищевых продуктов. М.: ДеЛи принт, 2002.","Калорийность и состав продуктов. Значения округлены; у конкретной марки могут отличаться, сверяйте с этикеткой."],
   ["Institute of Medicine. Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids. Washington: National Academies Press, 2005.","Клетчатка: 14 г на каждые 1000 ккал."],
-  ["Schoenfeld BJ и др. Longer interset rest periods enhance muscle strength and hypertrophy in resistance-trained men. J Strength Cond Res. 2016;30(7):1805–1812.","Отдых 2–3 минуты в базовых упражнениях лучше, чем 1 минута."]
+  ["Schoenfeld BJ и др. Longer interset rest periods enhance muscle strength and hypertrophy in resistance-trained men. J Strength Cond Res. 2016;30(7):1805–1812.","Отдых 2–3 минуты в базовых упражнениях лучше, чем 1 минута."],
+  ["Barakat C, Pearson J, Escalante G, Campbell B, De Souza EO. Body recomposition: can trained individuals build muscle and lose fat at the same time? Strength Cond J. 2020;42(5):7–21.","Рельеф: тренированные люди могут сбрасывать жир и набирать мышцы одновременно при небольшом дефиците, высоком белке и прогрессии нагрузок."],
+  ["Longland TM, Oikawa SY, Mitchell CJ, Devries MC, Phillips SM. Higher compared with lower dietary protein during an energy deficit combined with intense exercise promotes greater lean mass gain and fat mass loss. Am J Clin Nutr. 2016;103(3):738–746.","Белок 2,4 г/кг в дефиците с силовыми и интервалами: прирост мышц и потеря жира."],
+  ["Wewege M, van den Berg R, Ward RE, Keech A. The effects of high-intensity interval training vs. moderate-intensity continuous training on body composition in overweight and obese adults: a systematic review and meta-analysis. Obes Rev. 2017;18(6):635–646.","Интервалы и обычное кардио сжигают жир одинаково, интервалы — за меньшее время."]
   ];
   view().innerHTML=`<div class="stack">
     <div class="sec prose"><h2>На чём основаны расчёты</h2>
       <p>Все нормы взяты из позиций профильных организаций (ACSM, ISSN, МОК, ВОЗ) и метаанализов. Номера в тексте разделов отсылают к этому списку.</p></div>
     <ol class="src">${S.map(([a,b])=>`<li>${a}<em>${b}</em></li>`).join("")}</ol>
     <div class="sec prose"><h2>Что здесь упрощено</h2>
-      <p>Коэффициенты быта 1,4 / 1,6 / 1,8 выбраны внутри диапазонов ФАО/ВОЗ и не включают тренировки: они считаются отдельно. Конкретные проценты профицита по стажу (15, 12 и 10%) и дефицит 20% — точки внутри диапазонов из источников 8 и 9. Подбор упражнений и раскладка по дням — типовые схемы, собранные под требования источников 13–16, а не программа из отдельного исследования.</p>
+      <p>Коэффициенты быта 1,4 / 1,6 / 1,8 выбраны внутри диапазонов ФАО/ВОЗ и не включают тренировки: они считаются отдельно. Конкретные проценты профицита по стажу (15, 12 и 10%), дефицит 20% для сушки и 12% для рельефа — точки внутри диапазонов из источников 8 и 9. Подбор упражнений и раскладка по дням — типовые схемы, собранные под требования источников 13–16, а не программа из отдельного исследования.</p>
       <p>Приложение не заменяет врача и тренера. При хронических заболеваниях, беременности, расстройствах пищевого поведения и до 18 лет план питания нужно согласовать со специалистом.</p></div>
   </div>`;
 }
