@@ -173,8 +173,8 @@ function persistLocal(){
 }
 function dropPlain(){[LS,"dobor.v1"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}})}
 function dropAll(){dropPlain();try{localStorage.removeItem(SEC)}catch(e){}try{indexedDB.deleteDatabase("getbigger")}catch(e){}}
-const localText=()=>key?"Данные зашифрованы на этом устройстве":"Данные хранятся на этом устройстве";
-const savedText=()=>"Сохранено в вашем аккаунте";
+const localText=()=>"";
+const savedText=()=>"";
 // Приводит загруженные извне данные к ожидаемым типам
 function clean(st){
   const num=(v,min,max,d)=>{v=Number(v);return v>=min&&v<=max?v:d},pick=(v,list,d)=>list.includes(v)?v:d,p=st.profile||{};
@@ -200,7 +200,7 @@ function save(id){
   if(cloud){dirty.add(id);clearTimeout(flushTimer);flushTimer=setTimeout(flush,700)}
 }
 async function flush(){
-  if(flushing||!cloud)return;flushing=true;setStatus("Сохраняю…");
+  if(flushing||!cloud)return;flushing=true;
   let id;
   try{
     while(dirty.size){id=dirty.values().next().value;dirty.delete(id);await cloud.doc(id).set(docBody(id))}
